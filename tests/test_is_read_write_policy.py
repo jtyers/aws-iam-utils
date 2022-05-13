@@ -11,16 +11,16 @@ def create_policy(*statements):
         "Statement": statements
     }
 
-def test_policy_is_write_only_with_single_write_only_op():
+def test_policy_is_read_write_with_single_read_write_op():
     p = create_policy({
         "Effect": "Allow",
         "Action": "s3:ListBucketVersions",
         "Resource": "*",
     })
 
-    assert aws_iam_utils.checks.is_write_only_policy(p)
+    assert aws_iam_utils.checks.is_read_write_policy(p)
 
-def test_policy_is_write_only_with_list_only_ops():
+def test_policy_is_read_write_with_list_only_ops():
     p = create_policy({
         "Effect": "Allow",
         "Action": [
@@ -32,7 +32,7 @@ def test_policy_is_write_only_with_list_only_ops():
 
     assert aws_iam_utils.checks.is_list_only_policy(p)
 
-def test_policy_is_write_only_with_write_only_ops_via_wildcards():
+def test_policy_is_read_write_with_read_write_ops_via_wildcards():
     p = minimize_policy(create_policy({
         "Effect": "Allow",
         "Action": [
@@ -41,9 +41,9 @@ def test_policy_is_write_only_with_write_only_ops_via_wildcards():
         "Resource": "*",
     }))
 
-    assert aws_iam_utils.checks.is_write_only_policy(p)
+    assert aws_iam_utils.checks.is_read_write_policy(p)
 
-def test_policy_is_write_only_with_read_ops():
+def test_policy_is_read_write_with_read_ops():
     p = create_policy({
         "Effect": "Allow",
         "Action": [
@@ -54,9 +54,9 @@ def test_policy_is_write_only_with_read_ops():
         "Resource": "*",
     })
 
-    assert aws_iam_utils.checks.is_write_only_policy(p)
+    assert aws_iam_utils.checks.is_read_write_policy(p)
 
-def test_policy_is_write_only_with_write_ops():
+def test_policy_is_read_write_with_write_ops():
     p = create_policy({
         "Effect": "Allow",
         "Action": [
@@ -67,9 +67,9 @@ def test_policy_is_write_only_with_write_ops():
         "Resource": "*",
     })
 
-    assert aws_iam_utils.checks.is_write_only_policy(p)
+    assert aws_iam_utils.checks.is_read_write_policy(p)
 
-def test_policy_is_not_write_only_with_permmgmt_ops():
+def test_policy_is_not_read_write_with_permmgmt_ops():
     p = create_policy({
         "Effect": "Allow",
         "Action": [
@@ -79,9 +79,9 @@ def test_policy_is_not_write_only_with_permmgmt_ops():
         "Resource": "*",
     })
 
-    assert not aws_iam_utils.checks.is_write_only_policy(p)
+    assert not aws_iam_utils.checks.is_read_write_policy(p)
 
-def test_policy_is_not_write_only_with_tagging_ops():
+def test_policy_is_not_read_write_with_tagging_ops():
     p = create_policy({
         "Effect": "Allow",
         "Action": [
@@ -91,4 +91,4 @@ def test_policy_is_not_write_only_with_tagging_ops():
         "Resource": "*",
     })
 
-    assert not aws_iam_utils.checks.is_write_only_policy(p)
+    assert not aws_iam_utils.checks.is_read_write_policy(p)

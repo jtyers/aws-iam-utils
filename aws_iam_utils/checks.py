@@ -54,7 +54,7 @@ def is_list_only_policy(p):
     return policy_has_only_these_access_levels(p, [ LIST ])
 
 
-def is_write_only_policy(p):
+def is_read_write_policy(p):
     """
     Returns True if all actions granted under the given policy are Read, List or Write actions.
     """

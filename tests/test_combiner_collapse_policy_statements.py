@@ -76,6 +76,41 @@ def test_collapse_policy_action_lists_in_multiple_policies():
         "Resource": "*",
     })
 
+def test_collapse_policy_action_lists_in_multiple_policies_with_duplicates():
+    pp = [
+        create_policy(
+            statement(actions=[ "s3:PutObject", "s3:PutBucketPolicy" ], resource="*"),
+            statement(actions=[ "s3:GetObject", "s3:GetObjectAcl", "s3:ListBucket" ], resource="*"),
+        ),
+        create_policy(
+            statement(actions=[ "s3:PutObjectVersion", "s3:PutObjectLock" ], resource="*"),
+            statement(actions=[ "s3:PutObject", "s3:GetObjectAcl" ], resource="*"),
+        ),
+        create_policy(
+            statement(actions=[ "s3:PutLegalHold", "s3:PutObjectAcl" ], resource="*"),
+            statement(actions=[ "s3:ListAllMyBuckets", "s3:GetBucketTagging", "s3:PutObject" ], resource="*"),
+        ),
+    ]
+
+    assert aws_iam_utils.combiner.collapse_policy_statements(*pp) == create_lowercase_policy({
+        "Effect": "Allow",
+        "Action": [
+            "s3:PutObject",
+            "s3:PutBucketPolicy",
+            "s3:GetObject",
+            "s3:GetObjectAcl",
+            "s3:ListBucket",
+            "s3:PutObjectVersion",
+            "s3:PutObjectLock",
+            "s3:PutLegalHold",
+            "s3:PutObjectAcl",
+            "s3:ListAllMyBuckets",
+            "s3:GetBucketTagging",
+        ],
+        "Resource": "*",
+    })
+
+
 
 def test_collapse_policy_actions_across_resources():
     p = create_policy(

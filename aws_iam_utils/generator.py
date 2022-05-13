@@ -11,7 +11,7 @@ def generate_read_only_policy_for_service(service_name):
 def generate_list_only_policy_for_service(service_name):
     return generate_policy_for_service(service_name, [ LIST ])
 
-def generate_write_only_policy_for_service(service_name):
+def generate_read_write_policy_for_service(service_name):
     return generate_policy_for_service(service_name, [ LIST, READ, WRITE ])
 
 def generate_full_policy_for_service(*service_name):

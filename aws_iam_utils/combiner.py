@@ -54,7 +54,11 @@ def collapse_policy_statements(*policies):
         }.items():
             if v is not None: new_statement[k] = v
 
-        new_statement["Action"] = actions
+        # finally, remove duplicate actions while retaining original order
+        # https://stackoverflow.com/a/25560184
+        deduped_actions = sorted(set(actions), key=lambda x: actions.index(x))
+
+        new_statement["Action"] = deduped_actions
 
         new_policy_statements.append(new_statement)
 
