@@ -1,6 +1,6 @@
 # aws-iam-utils
 
-aws-iam-utils is a Python library with some utility functions for working with AWS IAM policies. I wrote this because, although many awesome libraries exist, there was no simple toolset I could find that brings them together for practical use when you want the minimum code/scripting to get things done, particularly without learning a complex API.
+aws-iam-utils is a Python library with some utility functions for working with AWS IAM policies. I wrote this because, although many awesome AWS utility libraries exist, there was no simple toolset I could find that brings them together for practical use when you want the minimum code/scripting to get things done, particularly without learning a complex API.
 
 aws-iam-utils allows you to:
 
@@ -16,7 +16,7 @@ aws-iam-utils allows you to:
 
 * simplify policies by changing arrays for Actions, Resources and Principals into strings if they contain only one item
 
-There is an extensive test suite covering all features, given the importance of getting IAM-related things right. Nevertheless it is your responsibility to use this code wisely and satisfy yourself that its outputs are secure for your needs.
+There is an extensive test suite covering all features. Remember it is your responsibility to use this code wisely and satisfy yourself that its outputs are secure for your needs.
 
 All the data that supports the policy generation and access levels comes from the excellent `policyuniverse` and `policy_sentry` libraries, which in turn get their data from AWS's own API documentation.
 
