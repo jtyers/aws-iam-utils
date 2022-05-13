@@ -18,7 +18,7 @@ def test_policy_is_read_only_with_single_read_only_op():
         "Resource": "*",
     })
 
-    assert aws_iam_utils.is_read_only_policy(p)
+    assert aws_iam_utils.checks.is_read_only_policy(p)
 
 def test_policy_is_read_only_with_list_only_ops():
     p = create_policy({
@@ -30,7 +30,7 @@ def test_policy_is_read_only_with_list_only_ops():
         "Resource": "*",
     })
 
-    assert aws_iam_utils.is_read_only_policy(p)
+    assert aws_iam_utils.checks.is_read_only_policy(p)
 
 def test_policy_is_read_only_with_read_only_ops():
     p = create_policy({
@@ -47,7 +47,7 @@ def test_policy_is_read_only_with_read_only_ops():
         "Resource": "*",
     })
 
-    assert aws_iam_utils.is_read_only_policy(p)
+    assert aws_iam_utils.checks.is_read_only_policy(p)
 
 def test_policy_is_read_only_with_read_only_ops_via_wildcards():
     p = minimize_policy(create_policy({
@@ -64,7 +64,7 @@ def test_policy_is_read_only_with_read_only_ops_via_wildcards():
         "Resource": "*",
     }))
 
-    assert aws_iam_utils.is_read_only_policy(p)
+    assert aws_iam_utils.checks.is_read_only_policy(p)
 
 def test_policy_is_not_read_only_with_write_ops():
     p = create_policy({
@@ -82,7 +82,7 @@ def test_policy_is_not_read_only_with_write_ops():
         "Resource": "*",
     })
 
-    assert not aws_iam_utils.is_read_only_policy(p)
+    assert not aws_iam_utils.checks.is_read_only_policy(p)
 
 def test_policy_is_not_read_only_with_permmgmt_ops():
     p = create_policy({
@@ -100,7 +100,7 @@ def test_policy_is_not_read_only_with_permmgmt_ops():
         "Resource": "*",
     })
 
-    assert not aws_iam_utils.is_read_only_policy(p)
+    assert not aws_iam_utils.checks.is_read_only_policy(p)
 
 def test_policy_is_not_read_only_with_tagging_ops():
     p = create_policy({
@@ -118,4 +118,4 @@ def test_policy_is_not_read_only_with_tagging_ops():
         "Resource": "*",
     })
 
-    assert not aws_iam_utils.is_read_only_policy(p)
+    assert not aws_iam_utils.checks.is_read_only_policy(p)
