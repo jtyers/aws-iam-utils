@@ -4,6 +4,7 @@ from policyuniverse.expander_minimizer import expand_policy
 from policy_sentry.querying.actions import get_action_data
 
 from aws_iam_utils.constants import READ, LIST, WRITE
+from aws_iam_utils.util import extract_policy_permission_items
 
 def policies_are_equal(p1, p2):
     """
@@ -14,47 +15,13 @@ def policies_are_equal(p1, p2):
 
     @returns True if p1 and p2 represent exactly the same permissions, or False otherwise.
     """
-    return extract_policy_permission_items(p1) == extract_policy_permission_items(p2)
-
-def extract_policy_permission_items(policy):
-    """
-    For every individual permission granted, we build a dict of
-    { permission, resource, condition, principal } ("permission items").
-
-    The policy is always expanded via expand_policy() first.
-
-    This is here as it is useful for comparisons.
-    """
-
-    items = []
-
-    policy_expanded = expand_policy(policy)
-
-    for statement in policy_expanded["Statement"]:
-        for k in [ "Action", "Resource" ]:
-            if statement.get(k) is str:  # turn into list
-                statement[k] = [statement[k]]
-
-        condition = statement.get("Condition")
-        principal = statement.get("Principal")
-
-        for resource in statement.get("Resource", [None]):
-            for action in statement["Action"]:
-                items.append({
-                    "action": action,
-                    "resource": resource,
-                    "condition": condition,
-                    "principal": principal,
-                })
-
-    return items
-
+    return extract_policy_permission_items(expand_policy(p1)) == extract_policy_permission_items(expand_policy(p2))
 
 def policy_has_only_these_access_levels(p, access_levels):
     """
     Returns True if all actions granted under the given policy are Read or List actions.
     """
-    p_items = extract_policy_permission_items(p)
+    p_items = extract_policy_permission_items(expand_policy(p))
     for item in p_items:
         action_service, action_name = item["action"].split(":")
 

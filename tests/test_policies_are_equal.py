@@ -4,12 +4,10 @@ import copy
 
 from policyuniverse.expander_minimizer import minimize_policy
 from .context import aws_iam_utils
+from .testutil import lowercase_policy
+from aws_iam_utils.util import create_policy
+from aws_iam_utils.util import statement
 
-def create_policy(*statements):
-    return {
-        "Version": "2012-10-17",
-        "Statement": statements
-    }
 
 def reorder_policy(p):
     """Returns a copy of p which has had its Statements and nested Actions re-ordered randomly."""
@@ -33,9 +31,8 @@ def wildcard_policy(p):
 
 @pytest.fixture
 def policy_1():
-    return create_policy({
-        "Effect": "Allow",
-        "Action": [
+    return create_policy(statement(
+        actions=[
             "s3:PutObject",
             "s3:PutObjectVersionAcl",
             "s3:PutObjectVersionTagging",
@@ -47,8 +44,8 @@ def policy_1():
             "s3:GetObjectVersionTorrent",
             "s3:GetObject",
         ],
-        "Resource": "*",
-    })
+        resource="*"
+    ))
 
 @pytest.fixture
 def policy_1_reordered(policy_1):
@@ -92,7 +89,7 @@ def test_policies_equal_when_inputs_equal(policy_1, policy_1_wildcards):
     assert aws_iam_utils.checks.policies_are_equal(policy_1, policy_1_wildcards)
 
 def test_policies_equal_when_inputs_equal_but_reordered(policy_1_reordered, policy_1_wildcards):
-    assert aws_iam_utils.checks.policies_are_equal(policy_1_reordered, policy_1_wildcards)
+    assert aws_iam_utils.checks.policies_are_equal(policy_1_reordered, lowercase_policy(policy_1_wildcards))
 
 def test_policies_not_equal_when_inputs_differ(policy_1, policy_2):
     assert not aws_iam_utils.checks.policies_are_equal(policy_1, policy_2)
@@ -151,7 +148,7 @@ def test_policies_not_equal_when_permissions_across_statements_differing_resourc
         "Resource": "*",
     })
 
-    assert not aws_iam_utils.checks.policies_are_equal(p1, p2)
+    assert not aws_iam_utils.checks.policies_are_equal(p1, lowercase_policy(p2))
 
 def test_policies_equal_with_conditions():
     p1 = create_policy({
@@ -186,7 +183,7 @@ def test_policies_not_equal_with_conditions_differing():
 
     p2 = create_policy({
         "Effect": "Allow",
-        "Action": "s3:PutObject",
+        "Action": "s3:putobject",
         "Resource": "*",
         "Condition": {
             "StringNotEqual": { "foo": "baz" }
