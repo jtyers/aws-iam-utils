@@ -88,6 +88,12 @@ def policy_2_wildcards(policy_2):
 def test_policies_equal_when_inputs_equal(policy_1, policy_1_wildcards):
     assert aws_iam_utils.checks.policies_are_equal(policy_1, policy_1_wildcards)
 
+def test_policies_equal_when_inputs_equal_differing_case():
+    p1 = create_policy(statement(actions=['s3:GetObject', 's3:PutObject']))
+    p2 = create_policy(statement(actions=['s3:getobject', 's3:putobject']))
+
+    assert aws_iam_utils.checks.policies_are_equal(p1, p2)
+
 def test_policies_equal_when_inputs_equal_but_reordered(policy_1_reordered, policy_1_wildcards):
     assert aws_iam_utils.checks.policies_are_equal(policy_1_reordered, lowercase_policy(policy_1_wildcards))
 
