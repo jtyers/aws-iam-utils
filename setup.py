@@ -1,5 +1,6 @@
 import pathlib
 from setuptools import setup
+from setuptools import find_packages
 
 # The directory containing this file
 HERE = pathlib.Path(__file__).parent
@@ -21,9 +22,9 @@ setup(
     classifiers=[
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.9",
     ],
-    packages=["aws_iam_utils"],
+    packages=find_packages(exclude=("tests",)),
     include_package_data=True,
     install_requires=["policy_sentry", "policyuniverse"],
     #entry_points={
