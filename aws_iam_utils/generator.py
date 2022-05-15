@@ -36,7 +36,7 @@ def generate_policy_for_service(service_name, reqd_access_levels):
             raise ValueError(f'invalid action: {action_name}')
 
         for action_output_action in action_output[service_name]:
-            if action_output_action["access_level"] in reqd_access_levels:
+            if action_output_action["access_level"] in reqd_access_levels and action_output_action['action'] not in matching_actions:
                 matching_actions.append(action_output_action["action"])
 
     policy = create_policy({

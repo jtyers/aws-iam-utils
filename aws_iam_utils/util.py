@@ -65,3 +65,19 @@ def extract_policy_permission_items(policy, allow_unsupported=False):
     return items
 
 
+def dedupe_list(lst):
+    return sorted(set(lst), key=lambda x: lst.index(x))
+
+def dedupe_policy(policy):
+    """Deduplicates all Actions, Principals and Resources in the given policy."""
+    for statement in policy["Statement"]:
+        for k in [ "Action", "Resource" ]:
+            if type(statement.get(k)) is list:
+                statement[k] = dedupe_list(statement[k])
+        
+        principal = statement.get("Principal")
+        for k in [ "AWS", "Service" ]:
+            if type(principal.get(k)) is list:
+                principal[k] = dedupe_list(principal[k])
+
+    return policy

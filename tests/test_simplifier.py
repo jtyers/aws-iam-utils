@@ -1,6 +1,3 @@
-import pytest
-import copy
-
 from .context import aws_iam_utils
 from aws_iam_utils.util import create_policy
 from aws_iam_utils.util import statement
