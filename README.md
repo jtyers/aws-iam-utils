@@ -220,25 +220,18 @@ print(json.dumps(generate_read_only_policy_for_service('kinesis')))
 #     {
 #       "Effect": "Allow",
 #       "Action": [
-#         "kinesis:DescribeLimits",
-#         "kinesis:DescribeStream",
-#         "kinesis:DescribeStreamConsumer",
-#         "kinesis:DescribeStreamConsumer",
-#         "kinesis:DescribeStreamSummary",
-#         "kinesis:GetRecords",
-#         "kinesis:GetShardIterator",
-#         "kinesis:ListShards",
-#         "kinesis:ListStreamConsumers",
-#         "kinesis:ListStreams",
-#         "kinesis:ListTagsForStream",
-#         "kinesis:SubscribeToShard",
-#         "kinesis:SubscribeToShard"
+#         "kinesis:Describe*",
+#         "kinesis:Get*",
+#         "kinesis:List*",
+#         "kinesis:Subscribe*"
 #       ],
 #       "Resource": "*"
 #     }
 #   ]
 # }
 ```
+
+The generation engine will by default try to use verb wildcards, as you see above. You can turn this off by calling the generate function with `use_wildcard_verbs=False`. When using wildcards the generator verifies that the wildcards do not provide any extra permissions (e.g. where `s3:Put*` would include `s3:PutBucketPolicy`) - if the wildcards would result in extra permissions being given beyond the access level requested, the entire actions list is returned instead.
 
 There is also `generate_read_write_policy_for_service` and `generate_list_only_policy_for_service`, and `generate_full_policy_for_service`.
 
