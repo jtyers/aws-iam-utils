@@ -10,9 +10,14 @@ init:
 test:
 	pytest tests
 
-.PHONY: publish-test
-publish-test:
-	if [ -z "$$TWINE_USERNAME" ]; then
+.PHONY: build_dist
+build_dist:
+	python setup.py sdist bdist_wheel
+	twine check dist/*
+
+.PHONY: check-twine-env-vars
+check-twine-env-vars:
+	@if [ -z "$$TWINE_USERNAME" ]; then
 		echo "TWINE_USERNAME not set" >&2
 		exit 1
 	fi
@@ -22,9 +27,9 @@ publish-test:
 		exit 1
 	fi
 
-	python setup.py sdist bdist_wheel
-	twine check dist/*
 
+.PHONY: publish-test
+publish-test: check-twine-env-vars
 	twine upload \
 		--non-interactive \
 		--repository-url https://test.pypi.org/legacy/ \
@@ -34,6 +39,16 @@ publish-test:
 	@echo "  pip install -i https://test.pypi.org/simple/ \\" >&2
 	@echo "    --extra-index-url https://pypi.org/simple/ \\" >&2
 	@echo "    aws-iam-utils" >&2
+	@echo "" >&2
+
+.PHONY: publish
+publish: check-twine-env-vars
+	twine upload \
+		--non-interactive \
+		dist/*
+
+	@echo "Published to PyPI. To try installing, do:" >&2
+	@echo "  pip install aws-iam-utils" >&2
 	@echo "" >&2
 
 .PHONY: clean

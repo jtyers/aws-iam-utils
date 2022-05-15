@@ -2,6 +2,8 @@
 
 aws-iam-utils is a Python library with some utility functions for working with AWS IAM policies. I wrote this because, although many awesome AWS utility libraries exist, there was no simple toolset I could find that brings them together for practical use when you want the minimum code/scripting to get things done, particularly without learning a complex API.
 
+## Features
+
 aws-iam-utils allows you to:
 
 * check if two policies provide the same permissions (taking account of wildcards)
@@ -16,9 +18,19 @@ aws-iam-utils allows you to:
 
 * simplify policies by changing arrays for Actions, Resources and Principals into strings if they contain only one item
 
+See example code below to get started.
+
 There is an extensive test suite covering all features. Remember it is your responsibility to use this code wisely and satisfy yourself that its outputs are secure for your needs.
 
 All the data that supports the policy generation and access levels comes from the excellent `policyuniverse` and `policy_sentry` libraries, which in turn get their data from AWS's own API documentation.
+
+## Installation
+
+As easy as:
+
+```
+pip install aws-iam-utils
+```
 
 ## Examples
 
@@ -72,16 +84,16 @@ from aws_iam_utils.checks import is_list_only_policy
 from aws_iam_utils.util import create_policy
 
 p = create_policy({
-¦   "Effect": "Allow",
-¦   "Action": [
-¦   ¦   "s3:ListBucket",
-¦   ¦   "s3:ListBucketVersions",
-¦   ¦   "s3:GetObjectVersion",
-¦   ],
-¦   "Resource": "*",
+  "Effect": "Allow",
+  "Action": [
+    "s3:ListBucket",
+    "s3:ListBucketVersions",
+    "s3:GetObjectVersion",
+  ],
+  "Resource": "*",
 })
 
-print(aws_iam_utils.checks.is_list_only_policy(p))
+print(is_list_only_policy(p))
 # False (because GetObjectVersion is a read operation)
 ```
 
@@ -213,7 +225,7 @@ This is a simple policy-generation API that generates policies for a particular 
 
 from aws_iam_utils.generator import generate_read_only_policy_for_service
 
-print(json.dumps(generate_read_only_policy_for_service('kinesis')))
+print(generate_read_only_policy_for_service('kinesis'))
 # {
 #   "Version": "2012-10-17",
 #   "Statement": [
