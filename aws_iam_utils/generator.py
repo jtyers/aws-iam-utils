@@ -3,10 +3,10 @@ import sys
 
 from policy_sentry.querying.actions import get_actions_for_service
 from policy_sentry.querying.actions import get_actions_matching_arn_type
-from policy_sentry.querying.actions import get_action_data
 
 from aws_iam_utils import checks
 from aws_iam_utils.util import create_policy
+from aws_iam_utils.util import get_action_data_with_overrides
 from aws_iam_utils.util import statement
 from aws_iam_utils.constants import READ, LIST, WRITE
 
@@ -79,7 +79,7 @@ def __generate_and_validate_policy_from_actions(service_actions, service_name, r
         action_service, action_name = action.split(':')
 
         # iterate through each action and pull out read-only actions
-        action_output = get_action_data(action_service, action_name)
+        action_output = get_action_data_with_overrides(action_service, action_name)
 
         if action_output is False:
             raise ValueError(f'invalid action: {action_name}')

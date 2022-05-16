@@ -1,10 +1,12 @@
 import pytest
 import copy
 
+from policyuniverse.expander_minimizer import expand_policy
+
 from .context import aws_iam_utils
 from aws_iam_utils.util import create_policy
 from aws_iam_utils.util import statement
-from aws_iam_utils.constants import WILDCARD_ARN_TYPE
+from aws_iam_utils.constants import READ, LIST, WILDCARD_ARN_TYPE
 
 def test_generate_read_only_policy():
     p = aws_iam_utils.generator.generate_read_only_policy_for_service('s3')
@@ -78,3 +80,10 @@ def test_generate_full_policy():
     assert p == create_policy(
         statement(actions=["s3:*"], resource="*")
     )
+
+
+def test_generate_policy_for_service_uses_action_data_overrides():
+    # events:describeendpoint is a known action that needs an override,
+    # so generate a policy that contains it
+    p = aws_iam_utils.generator.generate_policy_for_service('events', [ LIST, READ ])
+    assert 'events:describeendpoint' in expand_policy(p)['Statement'][0]['Action']
