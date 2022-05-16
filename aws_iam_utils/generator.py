@@ -99,12 +99,12 @@ def __generate_and_validate_policy_from_actions(service_actions, service_name, r
 
             parts = list(filter(lambda x: len(x)>0, re.split('([A-Z])', action_name, 2)))
 
-            if len(parts) == 4:
+            if len(parts) >= 4:
                 # 'DescribeJobAspectsPolicy' -> ['D', 'escribe', 'J', 'obAspectsPolicy']
                 verb = parts[0]+parts[1]
                 wildcarded_verb = f'{service_name}:{verb}*'
 
-                if 'Policy' not in verb and 'Tagging' not in verb and wildcarded_verb not in wildcarded_matching_actions:
+                if 'Policy' not in action_name and 'Tagging' not in action_name and wildcarded_verb not in wildcarded_matching_actions:
                     wildcarded_matching_actions.append(wildcarded_verb)
 
             else:
