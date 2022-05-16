@@ -247,6 +247,49 @@ The generation engine will by default try to use verb wildcards, as you see abov
 
 There is also `generate_read_write_policy_for_service` and `generate_list_only_policy_for_service`, and `generate_full_policy_for_service`.
 
+You can now generate policies that cater to specific ARN types as well. For example, to create a policy that can read/write S3 objects, but not buckets:
+
+```python
+from aws_iam_utils.generator import generate_read_write_policy_for_service_arn_type
+
+print(generate_read_write_policy_for_service_arn_type('s3','object'))
+# {
+#   "Version": "2012-10-17",
+#   "Statement": [
+#     {
+#       "Effect": "Allow",
+#       "Action": [
+#         "s3:AbortMultipartUpload",
+#         "s3:DeleteObject",
+#         "s3:DeleteObjectVersion",
+#         "s3:GetObject",
+#         "s3:GetObjectAcl",
+#         "s3:GetObjectAttributes",
+#         "s3:GetObjectLegalHold",
+#         "s3:GetObjectRetention",
+#         "s3:GetObjectTagging",
+#         "s3:GetObjectTorrent",
+#         "s3:GetObjectVersion",
+#         "s3:GetObjectVersionAcl",
+#         "s3:GetObjectVersionAttributes",
+#         "s3:GetObjectVersionForReplication",
+#         "s3:GetObjectVersionTagging",
+#         "s3:GetObjectVersionTorrent",
+#         "s3:InitiateReplication",
+#         "s3:ListMultipartUploadParts",
+#         "s3:PutObject",
+#         "s3:PutObjectLegalHold",
+#         "s3:PutObjectRetention",
+#         "s3:ReplicateDelete",
+#         "s3:ReplicateObject",
+#         "s3:RestoreObject"
+#       ],
+#       "Resource": "*"
+#     }
+#   ]
+# }
+```
+
 # Documentation
 
 Coming soon. In the meantime each function already has documentation - check the sources. For example usage, see the tests.

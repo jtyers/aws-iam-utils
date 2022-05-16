@@ -1,9 +1,12 @@
 import sys
+import json
 
 from policyuniverse.expander_minimizer import expand_policy
 from policy_sentry.querying.actions import get_action_data
+from policy_sentry.querying.actions import get_actions_matching_arn_type
+from policy_sentry.querying.actions import get_actions_that_support_wildcard_arns_only
 
-from aws_iam_utils.constants import READ, LIST, WRITE
+from aws_iam_utils.constants import READ, LIST, WRITE, WILDCARD_ARN_TYPE
 from aws_iam_utils.util import extract_policy_permission_items
 
 def policies_are_equal(p1, p2):
@@ -59,3 +62,36 @@ def is_read_write_policy(p):
     Returns True if all actions granted under the given policy are Read, List or Write actions.
     """
     return policy_has_only_these_access_levels(p, [ READ, LIST, WRITE ])
+
+def policy_has_only_these_arn_types(p, service_name, arn_types):
+    """
+    Returns True if all actions granted under the given policy relate to the given ARN types only. Use `aws_iam_utils.constants.WILDCARD_ARN_TYPE` to refer to actions that do not relate to an ARN type (so-called "wildcard actions" in policy_sentry).
+    """
+    arn_type_actions = {}
+    for arn_type in arn_types:
+        if arn_type == WILDCARD_ARN_TYPE:
+            arn_type_actions[arn_type] = [ x.lower() for x in get_actions_that_support_wildcard_arns_only(service_name) ]
+        else:
+            arn_type_actions[arn_type] = [ x.lower() for x in get_actions_matching_arn_type(service_name, arn_type) ]
+
+    p_items = extract_policy_permission_items(expand_policy(p))
+    for item in p_items:
+        action_service, action_name = item["action"].split(":")
+
+        action_output = get_action_data(action_service, action_name)
+
+        if action_output is False:
+            raise ValueError(f'invalid action: {item["action"]}')
+
+        action_found = False
+        for arn_type in arn_types:
+            if item['action'].lower() in arn_type_actions[arn_type]:
+                action_found = True
+                break
+
+        if action_found is False:
+            return False
+
+    return True
+
+

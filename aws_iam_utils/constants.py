@@ -6,4 +6,6 @@ WRITE = "Write"
 TAGGING = "Tagging"
 PERMISSIONS = "Permissions management"
 
+ALL_ACCESS_LEVELS = [ READ, LIST, WRITE, TAGGING, PERMISSIONS ]
 
+WILDCARD_ARN_TYPE = '*'
