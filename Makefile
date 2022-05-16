@@ -12,6 +12,7 @@ test:
 
 .PHONY: build_dist
 build_dist:
+	# nb: if this step fails, do pip install wheel
 	python setup.py sdist bdist_wheel
 	twine check dist/*
 
@@ -30,6 +31,7 @@ check-twine-env-vars:
 
 .PHONY: publish-test
 publish-test: check-twine-env-vars
+	# nb: if this step fails, do pip install twine
 	twine upload \
 		--non-interactive \
 		--repository-url https://test.pypi.org/legacy/ \
