@@ -9,11 +9,14 @@ from aws_iam_utils.constants import WILDCARD_ARN_TYPE
 def test_generate_read_only_policy():
     p = aws_iam_utils.generator.generate_read_only_policy_for_service('s3')
 
-    for statement in p['Statement']:
-        for action in statement['Action']:
-            assert action.startswith('s3:')
-
     assert aws_iam_utils.checks.is_read_only_policy(p)
+    assert p == create_policy(
+        statement(actions=[
+            's3:Describe*',
+            's3:Get*',
+            's3:List*',
+        ], resource='*')
+    )
 
 def test_generate_read_write_policy():
     p = aws_iam_utils.generator.generate_read_write_policy_for_service('s3')
@@ -27,11 +30,10 @@ def test_generate_read_write_policy():
 def test_generate_list_only_policy():
     p = aws_iam_utils.generator.generate_list_only_policy_for_service('s3')
 
-    for statement in p['Statement']:
-        for action in statement['Action']:
-            assert action.startswith('s3:')
-
     assert aws_iam_utils.checks.is_list_only_policy(p)
+    assert p == create_policy(
+        statement(actions=['s3:List*'], resource='*')
+    )
 
 def test_generate_full_policy():
     p = aws_iam_utils.generator.generate_full_policy_for_service('s3')
