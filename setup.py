@@ -11,7 +11,7 @@ README = (HERE / "README.md").read_text()
 # This call to setup() does all the work
 setup(
     name="aws-iam-utils",
-    version="1.5.1",
+    version="1.5.2",
     description="AWS IAM utility library",
     long_description=README,
     long_description_content_type="text/markdown",
