@@ -1,4 +1,6 @@
 from policyuniverse.expander_minimizer import expand_policy
+from policy_sentry.querying.actions import get_action_data
+from aws_iam_utils.action_data_overrides import ACTION_DATA_OVERRIDES
 
 def create_policy(*statements, version="2012-10-17"):
     """Shortcut function to create a policy with the given statements."""
@@ -55,7 +57,7 @@ def extract_policy_permission_items(policy, allow_unsupported=False):
         for resource in statement.get("Resource", [None]):
             for action in statement["Action"]:
                 items.append({
-                    "effect": effect.lower(),
+                    "effect": effect,
                     "action": action.lower(),
                     "resource": resource,
                     "condition": condition,
@@ -81,3 +83,14 @@ def dedupe_policy(policy):
                 principal[k] = dedupe_list(principal[k])
 
     return policy
+
+def get_action_data_with_overrides(service_name, action_name):
+    full_action_name = f'{service_name}:{action_name.lower()}'
+    if full_action_name in ACTION_DATA_OVERRIDES:
+        return {
+            service_name: [
+                ACTION_DATA_OVERRIDES[full_action_name]
+            ]
+        }
+
+    return get_action_data(service_name, action_name)

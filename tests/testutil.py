@@ -7,7 +7,10 @@ def lowercase_policy(p):
     for statement in p['Statement']:
         new_statement = {}
 
-        for key in [ "Effect", "Action" ]:
+        # do NOT do Effect lower(), as this breaks policyuniverse
+        new_statement['Effect'] = statement['Effect']
+
+        for key in [ "Action" ]:
             if key in statement:
                 if type(statement[key]) is list:
                     new_statement[key] = [ s.lower() for s in statement[key] ]
