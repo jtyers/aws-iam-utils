@@ -4,6 +4,11 @@ import copy
 
 from policyuniverse.expander_minimizer import minimize_policy
 from .context import aws_iam_utils
+from aws_iam_utils.checks import is_read_only_policy
+from aws_iam_utils.checks import policy_has_only_these_access_levels
+from aws_iam_utils.constants import READ
+from aws_iam_utils.util import create_policy
+from aws_iam_utils.util import statement
 
 def create_policy(*statements):
     return {
@@ -119,3 +124,11 @@ def test_policy_is_not_read_only_with_tagging_ops():
     })
 
     assert not aws_iam_utils.checks.is_read_only_policy(p)
+
+def test_generate_policy_for_service_uses_action_data_overrides():
+    # events:describeendpoint is a known action that needs an override,
+    # so generate a policy that contains it
+    p = create_policy(
+        statement(actions=['events:describe*'])
+    )
+    assert policy_has_only_these_access_levels(p, [ READ ])

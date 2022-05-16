@@ -11,7 +11,7 @@ test:
 	pytest tests
 
 .PHONY: build_dist
-build_dist:
+build_dist: test
 	# nb: if this step fails, do pip install wheel
 	python setup.py sdist bdist_wheel
 	twine check dist/*
