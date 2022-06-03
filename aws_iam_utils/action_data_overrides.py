@@ -21,4 +21,12 @@ ACTION_DATA_OVERRIDES = {
     'action': 'describeendpoint:describeendpoint',
     'access_level': READ,
   },
+  'wafv2:listmobilesdkreleases': {
+    'action': 'wafv2:listmobilesdkreleases',
+    'access_level': LIST,
+  },
+  'wafv2:getmobilesdkrelease': {
+    'action': 'wafv2:getmobilesdkrelease',
+    'access_level': READ,
+  },
 }
