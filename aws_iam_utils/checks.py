@@ -9,7 +9,7 @@ from aws_iam_utils.constants import READ, LIST, WRITE, WILDCARD_ARN_TYPE
 from aws_iam_utils.util import extract_policy_permission_items
 from aws_iam_utils.util import get_action_data_with_overrides
 
-def policies_are_equal(p1, p2):
+def policies_are_equal(p1: dict, p2: dict) -> bool:
     """
     Checks whether two policies give the same permissions. This will expand all wildcards and Resource constraints and then compare the result.
 
@@ -20,7 +20,7 @@ def policies_are_equal(p1, p2):
     """
     return extract_policy_permission_items(expand_policy(p1)) == extract_policy_permission_items(expand_policy(p2))
 
-def policy_has_only_these_access_levels(p, access_levels):
+def policy_has_only_these_access_levels(p: dict, access_levels: list[str]) -> bool:
     """
     Returns True if all actions granted under the given policy are Read or List actions.
     """
@@ -43,27 +43,27 @@ def policy_has_only_these_access_levels(p, access_levels):
     return True
 
 
-def is_read_only_policy(p):
+def is_read_only_policy(p: dict) -> bool:
     """
     Returns True if all actions granted under the given policy are Read or List actions.
     """
     return policy_has_only_these_access_levels(p, [ READ, LIST ])
 
 
-def is_list_only_policy(p):
+def is_list_only_policy(p: dict) -> bool:
     """
     Returns True if all actions granted under the given policy are List actions.
     """
     return policy_has_only_these_access_levels(p, [ LIST ])
 
 
-def is_read_write_policy(p):
+def is_read_write_policy(p: dict) -> bool:
     """
     Returns True if all actions granted under the given policy are Read, List or Write actions.
     """
     return policy_has_only_these_access_levels(p, [ READ, LIST, WRITE ])
 
-def policy_has_only_these_arn_types(p, service_name, arn_types):
+def policy_has_only_these_arn_types(p: dict, service_name: str, arn_types: list[str]) -> bool:
     """
     Returns True if all actions granted under the given policy relate to the given ARN types only. Use `aws_iam_utils.constants.WILDCARD_ARN_TYPE` to refer to actions that do not relate to an ARN type (so-called "wildcard actions" in policy_sentry).
     """

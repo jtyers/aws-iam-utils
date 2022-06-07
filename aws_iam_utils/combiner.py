@@ -4,7 +4,7 @@ from itertools import chain
 from aws_iam_utils.util import extract_policy_permission_items
 from aws_iam_utils.util import create_policy
 
-def combine_policy_statements(*policies):
+def combine_policy_statements(*policies: dict) -> dict:
     """
     Merges the Statements for all the given policies into a single policy.
     """
@@ -17,7 +17,7 @@ def combine_policy_statements(*policies):
         version=policies[0]["Version"],
     )
 
-def collapse_policy_statements(*policies):
+def collapse_policy_statements(*policies: dict) -> dict:
     """
     Attempts to merge policy statements together as far as possible, in order to simplify and shorten your policy. All statements with equal Effect, Condition, Principal and Resource keys will have their Actions merged together.
     """

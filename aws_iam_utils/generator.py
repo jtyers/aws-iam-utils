@@ -10,31 +10,31 @@ from aws_iam_utils.util import get_action_data_with_overrides
 from aws_iam_utils.util import statement
 from aws_iam_utils.constants import READ, LIST, WRITE
 
-def generate_read_only_policy_for_service(service_name, use_wildcard_verbs=True):
+def generate_read_only_policy_for_service(service_name: str, use_wildcard_verbs: bool=True) -> dict:
     """Generates an IAM policy that grants read-only access to all of the given service."""
     return generate_policy_for_service(service_name, [ LIST, READ ], use_wildcard_verbs=use_wildcard_verbs)
 
-def generate_list_only_policy_for_service(service_name, use_wildcard_verbs=True):
+def generate_list_only_policy_for_service(service_name: str, use_wildcard_verbs: bool=True) -> dict:
     """Generates an IAM policy that grants list-only access to all of the given service."""
     return generate_policy_for_service(service_name, [ LIST ], use_wildcard_verbs=use_wildcard_verbs)
 
-def generate_read_write_policy_for_service(service_name, use_wildcard_verbs=True):
+def generate_read_write_policy_for_service(service_name: str, use_wildcard_verbs: bool=True) -> dict:
     """Generates an IAM policy that grants read-write access to all of the given service."""
     return generate_policy_for_service(service_name, [ LIST, READ, WRITE ], use_wildcard_verbs=use_wildcard_verbs)
 
-def generate_read_only_policy_for_service_arn_type(service_name, arn_type):
+def generate_read_only_policy_for_service_arn_type(service_name: str, arn_type: str) -> dict:
     """Generates an IAM policy that grants read-only access to all of the given service."""
     return generate_policy_for_service_arn_type(service_name, arn_type, [ LIST, READ ])
 
-def generate_list_only_policy_for_service_arn_type(service_name, arn_type):
+def generate_list_only_policy_for_service_arn_type(service_name: str, arn_type: str) -> dict:
     """Generates an IAM policy that grants list-only access to all of the given service."""
     return generate_policy_for_service_arn_type(service_name, arn_type, [ LIST ])
 
-def generate_read_write_policy_for_service_arn_type(service_name, arn_type):
+def generate_read_write_policy_for_service_arn_type(service_name: str, arn_type: str) -> dict:
     """Generates an IAM policy that grants read-write access to all of the given service."""
     return generate_policy_for_service_arn_type(service_name, arn_type, [ LIST, READ, WRITE ])
 
-def generate_full_policy_for_service(*service_name):
+def generate_full_policy_for_service(*service_name: str) -> dict:
     """Generates an IAM policy that grants full access to all of the given service."""
     return create_policy({
         "Effect": "Allow",
@@ -42,7 +42,7 @@ def generate_full_policy_for_service(*service_name):
         "Resource": "*",
     })
 
-def generate_policy_for_service_arn_type(service_name, arn_type, reqd_access_levels):
+def generate_policy_for_service_arn_type(service_name: str, arn_type: str, reqd_access_levels: list[str]) -> dict:
     """
     Generates an IAM policy that grants the given level of access to a specific ARN type within the given AWS service.
 
@@ -58,7 +58,7 @@ def generate_policy_for_service_arn_type(service_name, arn_type, reqd_access_lev
     # wildcards will always matching more than one ARN type)
     return __generate_and_validate_policy_from_actions(service_actions, service_name, reqd_access_levels, use_wildcard_verbs=False)
 
-def generate_policy_for_service(service_name, reqd_access_levels, use_wildcard_verbs=True):
+def generate_policy_for_service(service_name: str, reqd_access_levels: list[str], use_wildcard_verbs: bool=True) -> dict:
     """
     Generates an IAM policy that grants the given level of access to all of the given AWS service.
 
@@ -71,7 +71,7 @@ def generate_policy_for_service(service_name, reqd_access_levels, use_wildcard_v
     return __generate_and_validate_policy_from_actions(service_actions, service_name, reqd_access_levels, use_wildcard_verbs)
 
 
-def __generate_and_validate_policy_from_actions(service_actions, service_name, reqd_access_levels, use_wildcard_verbs):
+def __generate_and_validate_policy_from_actions(service_actions: list[str], service_name: str, reqd_access_levels: list[str], use_wildcard_verbs: bool) -> dict:
     matching_actions = []
     policy = None
 
