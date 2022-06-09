@@ -4,37 +4,46 @@ from aws_iam_utils.constants import READ, WRITE, LIST
 This is a mapping of actions to overridden action data. This is primarily used to provide missing/incorrect results from policy_sentry's get_action_data.
 """
 ACTION_DATA_OVERRIDES = {
-  # NB: keys must be all lowercase
-  'lambda:createfunctionurlconfig': {
-    'action': 'lambda:createfunctionurlconfig',
-    'access_level': WRITE,
-  },
-  'lambda:getfunctionurlconfig': {
-    'action': 'lambda:getfunctionurlconfig',
-    'access_level': READ,
-  },
-  'lambda:deletefunctionurlconfig': {
-    'action': 'lambda:getfunctionurlconfig',
-    'access_level': WRITE,
-  },
-  'lambda:listfunctionurlconfigs': {
-    'action': 'lambda:listfunctionurlconfigs',
-    'access_level': LIST,
-  },
-  'events:listendpoints': {
-    'action': 'events:listendpoints',
-    'access_level': LIST,
-  },
-  'events:describeendpoint': {
-    'action': 'describeendpoint:describeendpoint',
-    'access_level': READ,
-  },
-  'wafv2:listmobilesdkreleases': {
-    'action': 'wafv2:listmobilesdkreleases',
-    'access_level': LIST,
-  },
-  'wafv2:getmobilesdkrelease': {
-    'action': 'wafv2:getmobilesdkrelease',
-    'access_level': READ,
-  },
+    x['action'].lower() : x for x in [
+        {
+            'action': 'lambda:CreateFunctionUrlConfig',
+            'access_level': WRITE,
+        },
+        {
+            'action': 'lambda:GetFunctionurlConfig',
+            'access_level': READ,
+        },
+        {
+            'action': 'lambda:DeleteFunctionUrlConfig',
+            'access_level': WRITE,
+        },
+        {
+            'action': 'lambda:UpdateFunctionUrlConfig',
+            'access_level': WRITE,
+        },
+        {
+            'action': 'lambda:ListFunctionurlConfigs',
+            'access_level': LIST,
+        },
+        {
+            'action': 'lambda:InvokeFunctionUrl',
+            'access_level': READ,
+        },
+        {
+            'action': 'events:ListEndpoints',
+            'access_level': LIST,
+        },
+        {
+            'action': 'events:DescribEendpoint',
+            'access_level': READ,
+        },
+        {
+            'action': 'wafv2:ListMobileSdkReleases',
+            'access_level': LIST,
+        },
+        {
+            'action': 'wafv2:GetMobileSdkRelease',
+            'access_level': READ,
+        },
+    ]
 }
