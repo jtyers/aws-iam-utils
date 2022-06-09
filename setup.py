@@ -27,7 +27,10 @@ setup(
     ],
     packages=find_packages(exclude=("tests",)),
     include_package_data=True,
-    install_requires=["policy_sentry", "policyuniverse"],
+    install_requires=[
+        "policyuniverse==1.5.0.20220523",
+        "policy_sentry==0.12.3",
+    ],
     #entry_points={
     #},
 )

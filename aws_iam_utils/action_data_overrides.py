@@ -13,6 +13,10 @@ ACTION_DATA_OVERRIDES = {
     'action': 'lambda:getfunctionurlconfig',
     'access_level': READ,
   },
+  'lambda:deletefunctionurlconfig': {
+    'action': 'lambda:getfunctionurlconfig',
+    'access_level': WRITE,
+  },
   'lambda:listfunctionurlconfigs': {
     'action': 'lambda:listfunctionurlconfigs',
     'access_level': LIST,
