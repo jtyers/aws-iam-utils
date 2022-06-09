@@ -49,7 +49,7 @@ def extract_policy_permission_items(policy, allow_unsupported=False):
         for k in [ "Action", "Resource" ]:
             if type(statement.get(k)) is str:  # turn into list
                 statement[k] = [statement[k]]
-            
+
         effect = statement.get("Effect")
         condition = statement.get("Condition")
         principal = statement.get("Principal")
