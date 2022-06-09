@@ -14,7 +14,7 @@ def test_policy_sentry_actions_out_of_date():
 
 def test_get_action_data_with_overrides():
     for action in ACTION_DATA_OVERRIDES:
-        action = 'lambda:getfunctionurlconfig'
+        #action = 'lambda:getfunctionurlconfig'
         service_name, action_name = action.split(':')
 
         result = get_action_data_with_overrides(service_name, action_name)

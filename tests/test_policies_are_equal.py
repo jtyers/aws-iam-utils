@@ -4,8 +4,8 @@ import copy
 
 from policyuniverse.expander_minimizer import minimize_policy
 from .context import aws_iam_utils
-from .testutil import lowercase_policy
 from aws_iam_utils.util import create_policy
+from aws_iam_utils.util import lowercase_policy
 from aws_iam_utils.util import statement
 
 

@@ -1,9 +1,8 @@
 from .context import aws_iam_utils
 
 from aws_iam_utils.util import create_policy
+from aws_iam_utils.util import create_lowercase_policy
 from aws_iam_utils.util import statement
-
-from .testutil import create_lowercase_policy
 
 def s3_arn(b):
     return f"arn:aws:s3:::{b}"
