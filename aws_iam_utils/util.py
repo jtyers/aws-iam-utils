@@ -2,14 +2,18 @@ from policy_sentry.querying.actions import get_action_data
 from aws_iam_utils.action_data_overrides import ACTION_DATA_OVERRIDES
 
 
-def create_policy(*statements, version="2012-10-17"):
+def create_policy(*statements: dict, version: str = "2012-10-17") -> dict:
     """Shortcut function to create a policy with the given statements."""
     return {"Version": version, "Statement": list(statements)}
 
 
 def statement(
-    effect="Allow", actions=[], resource=None, condition=None, principal=None
-):
+    effect: str = "Allow",
+    actions: list[str] = [],
+    resource: str = None,
+    condition: dict = None,
+    principal: dict = None,
+) -> dict:
     """Shortcut function to create a Statement with the given properties."""
     st = {}
 
@@ -26,7 +30,9 @@ def statement(
     return st
 
 
-def extract_policy_permission_items(policy, allow_unsupported=False):
+def extract_policy_permission_items(
+    policy: dict, allow_unsupported: bool = False
+) -> dict:
     """
     For every individual permission granted, we build a list of
     { permission, resource, condition, principal } ("permission items").
@@ -76,11 +82,11 @@ def extract_policy_permission_items(policy, allow_unsupported=False):
     return items
 
 
-def dedupe_list(lst):
+def dedupe_list(lst: list) -> list:
     return sorted(set(lst), key=lambda x: lst.index(x))
 
 
-def dedupe_policy(policy):
+def dedupe_policy(policy: dict) -> dict:
     """Deduplicates all Actions, Principals and Resources in the given
     policy."""
     for statement in policy["Statement"]:
@@ -96,7 +102,7 @@ def dedupe_policy(policy):
     return policy
 
 
-def get_action_data_with_overrides(service_name, action_name):
+def get_action_data_with_overrides(service_name: str, action_name: str) -> dict:
     full_action_name = f"{service_name}:{action_name.lower()}"
     if full_action_name in ACTION_DATA_OVERRIDES:
         return {service_name: [ACTION_DATA_OVERRIDES[full_action_name]]}

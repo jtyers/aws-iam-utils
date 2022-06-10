@@ -1,4 +1,4 @@
-def simplify_policy(p):
+def simplify_policy(p: dict) -> dict:
     """For the given policy, simplify any one-item arrays into straight strings, for
     Actions, Principals and Resources."""
 
