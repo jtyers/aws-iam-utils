@@ -11,7 +11,7 @@ README = (HERE / "README.md").read_text()
 # This call to setup() does all the work
 setup(
     name="aws-iam-utils",
-    version="1.5.3",
+    version="1.6.0",
     description="AWS IAM utility library",
     long_description=README,
     long_description_content_type="text/markdown",
@@ -27,7 +27,10 @@ setup(
     ],
     packages=find_packages(exclude=("tests",)),
     include_package_data=True,
-    install_requires=["policy_sentry", "policyuniverse"],
-    #entry_points={
-    #},
+    install_requires=[
+        "policyuniverse==1.5.0.20220523",
+        "policy_sentry==0.12.3",
+    ],
+    # entry_points={
+    # },
 )

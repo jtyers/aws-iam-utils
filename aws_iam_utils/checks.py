@@ -1,6 +1,3 @@
-import sys
-import json
-
 from policyuniverse.expander_minimizer import expand_policy
 from policy_sentry.querying.actions import get_actions_matching_arn_type
 from policy_sentry.querying.actions import get_actions_that_support_wildcard_arns_only
@@ -9,20 +6,29 @@ from aws_iam_utils.constants import READ, LIST, WRITE, WILDCARD_ARN_TYPE
 from aws_iam_utils.util import extract_policy_permission_items
 from aws_iam_utils.util import get_action_data_with_overrides
 
+
 def policies_are_equal(p1: dict, p2: dict) -> bool:
     """
-    Checks whether two policies give the same permissions. This will expand all wildcards and Resource constraints and then compare the result.
+    Checks whether two policies give the same permissions. This will expand
+    all wildcards and Resource constraints and then compare the result.
 
-    @param p1  The first policy. Should be a dict that contains a Statement key, which should be a list of dicts conforming to the AWS IAM Policy schema.
+    @param p1  The first policy. Should be a dict that contains a Statement
+               key, which should be a list of dicts conforming to the AWS IAM
+               Policy schema.
     @param p2  The second policy, same format as p1.
 
-    @returns True if p1 and p2 represent exactly the same permissions, or False otherwise.
+    @returns True if p1 and p2 represent exactly the same permissions, or
+             False otherwise.
     """
-    return extract_policy_permission_items(expand_policy(p1)) == extract_policy_permission_items(expand_policy(p2))
+    return extract_policy_permission_items(
+        expand_policy(p1)
+    ) == extract_policy_permission_items(expand_policy(p2))
+
 
 def policy_has_only_these_access_levels(p: dict, access_levels: list[str]) -> bool:
     """
-    Returns True if all actions granted under the given policy are Read or List actions.
+    Returns True if all actions granted under the given policy are Read or
+    List actions.
     """
     p_items = extract_policy_permission_items(expand_policy(p))
     for item in p_items:
@@ -45,34 +51,48 @@ def policy_has_only_these_access_levels(p: dict, access_levels: list[str]) -> bo
 
 def is_read_only_policy(p: dict) -> bool:
     """
-    Returns True if all actions granted under the given policy are Read or List actions.
+    Returns True if all actions granted under the given policy are Read or
+    List actions.
     """
-    return policy_has_only_these_access_levels(p, [ READ, LIST ])
+    return policy_has_only_these_access_levels(p, [READ, LIST])
 
 
 def is_list_only_policy(p: dict) -> bool:
     """
-    Returns True if all actions granted under the given policy are List actions.
+    Returns True if all actions granted under the given policy are List
+    actions.
     """
-    return policy_has_only_these_access_levels(p, [ LIST ])
+    return policy_has_only_these_access_levels(p, [LIST])
 
 
 def is_read_write_policy(p: dict) -> bool:
     """
-    Returns True if all actions granted under the given policy are Read, List or Write actions.
+    Returns True if all actions granted under the given policy are Read,
+    List or Write actions.
     """
-    return policy_has_only_these_access_levels(p, [ READ, LIST, WRITE ])
+    return policy_has_only_these_access_levels(p, [READ, LIST, WRITE])
 
-def policy_has_only_these_arn_types(p: dict, service_name: str, arn_types: list[str]) -> bool:
+
+def policy_has_only_these_arn_types(
+    p: dict, service_name: str, arn_types: list[str]
+) -> bool:
     """
-    Returns True if all actions granted under the given policy relate to the given ARN types only. Use `aws_iam_utils.constants.WILDCARD_ARN_TYPE` to refer to actions that do not relate to an ARN type (so-called "wildcard actions" in policy_sentry).
+    Returns True if all actions granted under the given policy relate to the
+    given ARN types only. Use `aws_iam_utils.constants.WILDCARD_ARN_TYPE` to
+    refer to actions that do not relate to an ARN type (so-called "wildcard
+    actions" in policy_sentry).
     """
     arn_type_actions = {}
     for arn_type in arn_types:
         if arn_type == WILDCARD_ARN_TYPE:
-            arn_type_actions[arn_type] = [ x.lower() for x in get_actions_that_support_wildcard_arns_only(service_name) ]
+            arn_type_actions[arn_type] = [
+                x.lower()
+                for x in get_actions_that_support_wildcard_arns_only(service_name)
+            ]
         else:
-            arn_type_actions[arn_type] = [ x.lower() for x in get_actions_matching_arn_type(service_name, arn_type) ]
+            arn_type_actions[arn_type] = [
+                x.lower() for x in get_actions_matching_arn_type(service_name, arn_type)
+            ]
 
     p_items = extract_policy_permission_items(expand_policy(p))
     for item in p_items:
@@ -85,7 +105,7 @@ def policy_has_only_these_arn_types(p: dict, service_name: str, arn_types: list[
 
         action_found = False
         for arn_type in arn_types:
-            if item['action'].lower() in arn_type_actions[arn_type]:
+            if item["action"].lower() in arn_type_actions[arn_type]:
                 action_found = True
                 break
 
@@ -93,5 +113,3 @@ def policy_has_only_these_arn_types(p: dict, service_name: str, arn_types: list[
             return False
 
     return True
-
-

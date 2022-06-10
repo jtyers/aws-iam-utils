@@ -4,6 +4,7 @@ from itertools import chain
 from aws_iam_utils.util import extract_policy_permission_items
 from aws_iam_utils.util import create_policy
 
+
 def combine_policy_statements(*policies: dict) -> dict:
     """
     Merges the Statements for all the given policies into a single policy.
@@ -13,13 +14,16 @@ def combine_policy_statements(*policies: dict) -> dict:
         return create_policy()
 
     return create_policy(
-        *list(chain(*[ p['Statement'] for p in policies ])),
+        *list(chain(*[p["Statement"] for p in policies])),
         version=policies[0]["Version"],
     )
 
+
 def collapse_policy_statements(*policies: dict) -> dict:
     """
-    Attempts to merge policy statements together as far as possible, in order to simplify and shorten your policy. All statements with equal Effect, Condition, Principal and Resource keys will have their Actions merged together.
+    Attempts to merge policy statements together as far as possible, in order to
+    simplify and shorten your policy. All statements with equal Effect, Condition,
+    Principal and Resource keys will have their Actions merged together.
     """
 
     # create a single policy with all Statements combined together
@@ -34,12 +38,14 @@ def collapse_policy_statements(*policies: dict) -> dict:
 
     for item in items:
         # turn into json so we can use nested dicts/lists/etc as dict keys
-        k = json.dumps([item['effect'], item['condition'], item['resource'], item['principal']])
+        k = json.dumps(
+            [item["effect"], item["condition"], item["resource"], item["principal"]]
+        )
 
-        if not k in actions_by_qualifiers:
+        if k not in actions_by_qualifiers:
             actions_by_qualifiers[k] = []
 
-        actions_by_qualifiers[k].append(item['action'])
+        actions_by_qualifiers[k].append(item["action"])
 
     new_policy_statements = []
     for qualifiers, actions in actions_by_qualifiers.items():
@@ -52,7 +58,8 @@ def collapse_policy_statements(*policies: dict) -> dict:
             "Resource": qualifiers_loaded[2],
             "Principal": qualifiers_loaded[3],
         }.items():
-            if v is not None: new_statement[k] = v
+            if v is not None:
+                new_statement[k] = v
 
         # finally, remove duplicate actions while retaining original order
         # https://stackoverflow.com/a/25560184
@@ -62,7 +69,4 @@ def collapse_policy_statements(*policies: dict) -> dict:
 
         new_policy_statements.append(new_statement)
 
-    return {
-        "Version": combined_policy["Version"],
-        "Statement": new_policy_statements
-    }
+    return {"Version": combined_policy["Version"], "Statement": new_policy_statements}

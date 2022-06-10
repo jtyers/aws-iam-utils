@@ -1,2 +1,0 @@
-policyuniverse
-policy_sentry
