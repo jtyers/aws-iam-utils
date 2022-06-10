@@ -1,0 +1,35 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v2.3.0
+    hooks:
+      - id: check-added-large-files
+      - id: check-case-conflict
+      - id: check-json
+      - id: check-merge-conflict
+      - id: check-yaml
+      - id: end-of-file-fixer
+        #- id: no-commit-to-branch  # protects main/master by default
+      - id: trailing-whitespace
+
+  - repo: https://github.com/ambv/black
+    # must run before flake8
+    rev: 22.3.0
+    hooks:
+      - id: black
+        language_version: python3.10
+
+  - repo: https://github.com/pycqa/flake8
+    rev: 4.0.1
+    hooks:
+    - id: flake8
+      args: [ "--max-line-length=88", "--extend-ignore=E203" ]
+
+  - repo: https://github.com/yelp/detect-secrets
+    rev: v1.1.0
+    hooks:
+      - id: detect-secrets
+
+  - repo: https://github.com/trailofbits/pip-audit
+    rev: v2.3.1
+    hooks:
+      - id: pip-audit

@@ -31,6 +31,6 @@ setup(
         "policyuniverse==1.5.0.20220523",
         "policy_sentry==0.12.3",
     ],
-    #entry_points={
-    #},
+    # entry_points={
+    # },
 )
