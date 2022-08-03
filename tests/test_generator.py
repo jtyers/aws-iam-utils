@@ -97,3 +97,27 @@ def test_generate_policy_for_service_uses_action_data_overrides():
     # so generate a policy that contains it
     p = aws_iam_utils.generator.generate_policy_for_service("events", [LIST, READ])
     assert "events:describeendpoint" in expand_policy(p)["Statement"][0]["Action"]
+
+
+def test_generate_policy_for_service_includes_wildcard_actions():
+    # ec2:DescribeFlowLogs and ssm:DescribeParameters are both actions
+    # for wildcard resources (i.e. you grant Resource = "*")
+    p = aws_iam_utils.generator.generate_policy_for_service("ssm", [LIST, READ])
+    assert "ssm:describeparameters" in expand_policy(p)["Statement"][0]["Action"]
+
+    p = aws_iam_utils.generator.generate_policy_for_service("ec2", [LIST, READ])
+    assert "ec2:describeflowlogs" in expand_policy(p)["Statement"][0]["Action"]
+
+
+def test_generate_policy_for_service_arn_type_includes_wildcard_actions():
+    # ec2:DescribeFlowLogs and ssm:DescribeParameters are both actions
+    # for wildcard resources (i.e. you grant Resource = "*")
+    p = aws_iam_utils.generator.generate_policy_for_service_arn_type(
+        "ssm", "parameter", [LIST, READ], include_service_wide_actions=True
+    )
+    assert "ssm:describeparameters" in expand_policy(p)["Statement"][0]["Action"]
+
+    p = aws_iam_utils.generator.generate_policy_for_service_arn_type(
+        "ec2", "vpc-flow-log", [LIST, READ], include_service_wide_actions=True
+    )
+    assert "ec2:describeflowlogs" in expand_policy(p)["Statement"][0]["Action"]

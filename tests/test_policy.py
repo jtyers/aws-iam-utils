@@ -125,3 +125,36 @@ def test_find_action_ppis():
             principal={"AWS": "arn:aws:iam:123456789012::role/foo"},
         ),
     ]
+
+
+def test_add_policy():
+    policy = create_policy(
+        statement(
+            actions=["s3:PutObject", "s3:GetObject"], resource="arn:aws:s3:::my-bucket1"
+        ),
+        statement(
+            actions=["s3:ListBucket", "s3:GetBucketPolicy"],
+            resource="arn:aws:s3:::my-bucket2",
+        ),
+        statement(
+            actions=["s3:GetObject"],
+            resource="arn:aws:s3:::my-bucket3/foo/*",
+            principal={"AWS": "arn:aws:iam:123456789012::role/foo"},
+        ),
+    )
+
+    p = policy_from_dict(policy)
+
+    result = p.find_action_ppis("s3:GetObject")
+
+    assert result == [
+        PolicyPermissionItem(
+            "Allow", "s3:getobject", resource="arn:aws:s3:::my-bucket1"
+        ),
+        PolicyPermissionItem(
+            "Allow",
+            "s3:getobject",
+            resource="arn:aws:s3:::my-bucket3/foo/*",
+            principal={"AWS": "arn:aws:iam:123456789012::role/foo"},
+        ),
+    ]

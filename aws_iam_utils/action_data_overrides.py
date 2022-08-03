@@ -36,7 +36,7 @@ ACTION_DATA_OVERRIDES = {
             "access_level": LIST,
         },
         {
-            "action": "events:DescribEendpoint",
+            "action": "events:DescribeEndpoint",
             "access_level": READ,
         },
         {

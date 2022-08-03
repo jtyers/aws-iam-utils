@@ -2,6 +2,7 @@ import re
 
 from policy_sentry.querying.actions import get_actions_for_service
 from policy_sentry.querying.actions import get_actions_matching_arn_type
+from policy_sentry.querying.actions import get_actions_that_support_wildcard_arns_only
 
 from aws_iam_utils import checks
 from aws_iam_utils.util import create_policy
@@ -78,7 +79,10 @@ def generate_full_policy_for_service(*service_name: str) -> dict:
 
 
 def generate_policy_for_service_arn_type(
-    service_name: str, arn_type: str, reqd_access_levels: list[str]
+    service_name: str,
+    arn_type: str,
+    reqd_access_levels: list[str],
+    include_service_wide_actions: bool = False,
 ) -> dict:
     """
     Generates an IAM policy that grants the given level of access to a specific
@@ -96,13 +100,25 @@ def generate_policy_for_service_arn_type(
     True, the full action list is returned. If the check still fails with the
     full action list, an AssertionError is raised, and this indicates an underlying
     bug in the policy data driving aws-iam-utils.
+
+    If include_service_wide_actions is True, any actions in the service not linked
+    to any resource type are also included in the result. This may be needed for
+    some wildcard actions (e.g. ssm:DescribeParameters, ec2:DescribeFlowLogs) which
+    are not linked to a specific ARN type in the IAM database.
     """
     service_actions = get_actions_matching_arn_type(service_name, arn_type)
 
+    if include_service_wide_actions:
+        wildcard_arn_actions = get_actions_that_support_wildcard_arns_only(service_name)
+        service_actions.extend(wildcard_arn_actions)
+
     # use_wildcard_verbs is False here as it'll always fail (verb-based
-    # wildcards will always matching more than one ARN type)
+    # wildcards will always match more than one ARN type)
     return __generate_and_validate_policy_from_actions(
-        service_actions, service_name, reqd_access_levels, use_wildcard_verbs=False
+        service_actions,
+        service_name,
+        reqd_access_levels,
+        use_wildcard_verbs=False,
     )
 
 
