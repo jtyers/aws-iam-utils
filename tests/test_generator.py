@@ -121,3 +121,17 @@ def test_generate_policy_for_service_arn_type_includes_wildcard_actions():
         "ec2", "vpc-flow-log", [LIST, READ], include_service_wide_actions=True
     )
     assert "ec2:describeflowlogs" in expand_policy(p)["Statement"][0]["Action"]
+
+
+def test_generate_policy_for_service_arn_type_excludes_wildcard_actions():
+    # ec2:DescribeFlowLogs and ssm:DescribeParameters are both actions
+    # for wildcard resources (i.e. you grant Resource = "*")
+    p = aws_iam_utils.generator.generate_policy_for_service_arn_type(
+        "ssm", "parameter", [LIST, READ], include_service_wide_actions=False
+    )
+    assert "ssm:describeparameters" not in expand_policy(p)["Statement"][0]["Action"]
+
+    p = aws_iam_utils.generator.generate_policy_for_service_arn_type(
+        "ec2", "vpc-flow-log", [LIST, READ], include_service_wide_actions=False
+    )
+    assert "ec2:describeflowlogs" not in expand_policy(p)["Statement"][0]["Action"]
