@@ -1,6 +1,7 @@
 from policyuniverse.expander_minimizer import expand_policy
 
 from .context import aws_iam_utils
+from aws_iam_utils.checks import policy_has_only_these_access_levels
 from aws_iam_utils.util import create_policy
 from aws_iam_utils.util import statement
 from aws_iam_utils.constants import READ, LIST, WILDCARD_ARN_TYPE
@@ -135,3 +136,17 @@ def test_generate_policy_for_service_arn_type_excludes_wildcard_actions():
         "ec2", "vpc-flow-log", [LIST, READ], include_service_wide_actions=False
     )
     assert "ec2:describeflowlogs" not in expand_policy(p)["Statement"][0]["Action"]
+
+
+def test_generate_policy_with_wildcard_actions_doesnt_overgrant():
+    # just to be sure - double check we don't add extra permissions
+    p = aws_iam_utils.generator.generate_policy_for_service_arn_type(
+        "ssm", "parameter", [LIST, READ], include_service_wide_actions=True
+    )
+    assert "ssm:describeparameters" in expand_policy(p)["Statement"][0]["Action"]
+
+    p = aws_iam_utils.generator.generate_policy_for_service_arn_type(
+        "ec2", "vpc-flow-log", [LIST, READ], include_service_wide_actions=True
+    )
+
+    assert policy_has_only_these_access_levels(p, [LIST, READ])
