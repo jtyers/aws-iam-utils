@@ -1,5 +1,8 @@
+import re
+
 from policy_sentry.querying.actions import get_action_data
 from aws_iam_utils.action_data_overrides import ACTION_DATA_OVERRIDES
+from aws_iam_utils.constants import PRE_VERBS
 
 
 def create_policy(*statements: dict, version: str = "2012-10-17") -> dict:
@@ -145,3 +148,75 @@ def create_lowercase_policy(*st):
     """Simply wraps create_policy and lowercase_policy, creating a policy with
     lowercase actions and effects regardless of the inputs."""
     return lowercase_policy(create_policy(*st))
+
+
+def split_into_words(action: str) -> list[str]:
+    """For the given string in camel case, split it into words, taking into account
+    that some words (like 'API') may be in all-caps.
+
+    For example,
+        DescribeAPIDetails -> ['Describe', 'API', 'Details']
+        BatchGetObject -> ['Batch', 'Get', 'Object']
+        CreateInstance -> ['Create', 'Instance']
+        DoMyRandomThingWithASingleAPIWafv2 -> ['Do', 'My', 'Random', 'Thing', 'With',
+                                               'A', 'Single', 'API', 'Wafv2']
+    """
+    action_substr = action
+
+    regex = "^([A-Z][a-z0-9]+)|^([A-Z0-9]+)[A-Z][a-z0-9]"
+    m = re.match(regex, action_substr)
+    words = []
+    while m:
+        matching_word = m.group(1) or m.group(2)
+        words.append(matching_word)
+
+        action_substr = action_substr[len(matching_word) :]
+        m = re.match(regex, action_substr)
+
+    if len(action_substr) > 0:
+        words.append(action_substr)
+
+    return words
+
+
+def extract_action_components(action: str) -> tuple[str]:
+    """Given an action name, such as "s3:PutBucketPolicy",
+    extract service, verb and subject as a tuple and return
+    (in this case: "s3", "Put", "BucketPolicy").
+
+    An effort is made to detect compound verbs, such as BatchGet*,
+    AdminGet* and similar."""
+
+    service_name, action_name = action.split(":")
+    action_data = get_action_data_with_overrides(service_name, action_name)
+
+    if not action_data:
+        raise ValueError(f"unknown action: {action} (not in policy_sentry database)")
+
+    # the 'action' field in get_action_data's return val
+    # is 'svc:action', so we need to strip out the leading
+    # service_name again
+    action_camelcase = action_data[service_name][0]["action"][len(service_name) + 1 :]
+
+    words = split_into_words(action_camelcase)
+
+    verb_parts = []
+    if words[0] in PRE_VERBS:
+        verb_parts.append(words.pop(0))
+        verb_parts.append(words.pop(0))
+
+    elif len(words) > 1 and (words[0] + words[1]) in PRE_VERBS:
+        verb_parts.append(words.pop(0))
+        verb_parts.append(words.pop(0))
+        verb_parts.append(words.pop(0))
+
+    else:
+        verb_parts.append(words.pop(0))
+
+    verb = "".join(verb_parts)
+
+    # subject = action_camelcase[len(verb) :]
+    # return (service_name, verb, subject)
+    result = [service_name, verb]
+    result.extend(words)
+    return tuple(result)

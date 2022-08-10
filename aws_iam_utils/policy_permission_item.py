@@ -1,4 +1,9 @@
+from fnmatch import fnmatch
+
+
 class PolicyPermissionItem:
+    """Defines a single permission that's granted in a policy."""
+
     def __init__(self, effect, action, resource=None, condition=None, principal=None):
         self.effect = effect
         self.action = action
@@ -6,7 +11,9 @@ class PolicyPermissionItem:
         self.condition = condition
         self.principal = principal
 
-    def as_statement(self):
+    def as_statement(self) -> dict:
+        """Returns this PolicyPermissionItem as a Statement as it would
+        appear in an IAM policy. (as a dict)"""
         result = {
             "Effect": self.effect,
             "Action": self.action,
@@ -20,6 +27,18 @@ class PolicyPermissionItem:
             result["Principal"] = self.principal
 
         return result
+
+    def matches_action(self, action):
+        """Returns True if the action defined by this PolicyPermissionItem
+        matches the given action. "Matches" means the actions are either
+        equal (ignoring case) or they match after wildcards are considered.
+        """
+        return (
+            action == self.action
+            or action.lower() == self.action.lower()
+            or fnmatch(action, self.action)
+            or fnmatch(self.action, action)
+        )
 
     def __as_dict(self):
         return {

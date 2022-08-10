@@ -10,3 +10,10 @@ PERMISSIONS = "Permissions management"
 ALL_ACCESS_LEVELS = [READ, LIST, WRITE, TAGGING, PERMISSIONS]
 
 WILDCARD_ARN_TYPE = "*"
+
+# List of words which may precede verbs in actions
+PRE_VERBS = [
+    "Admin",
+    "Batch",
+    "ESHttp",
+]
